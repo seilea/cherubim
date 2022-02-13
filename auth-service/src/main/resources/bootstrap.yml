@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: cherubim-auth
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        enabled: true
+        register: true
+        instanceId: ${spring.application.name}-${server.port}-${spring.cloud.client.ip-address}
+        healthCheckPath: ${management.server.servlet.context-path:}/actuator/health
+        healthCheckInterval: 10s
+        healthCheckCriticalTimeout: 3m
+        preferIpAddress: true

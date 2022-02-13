@@ -1,0 +1,113 @@
+buildscript {
+
+    ext {
+        springBootVersion = '3.0.0-SNAPSHOT'
+        springCloudVersion = '2022.0.0-SNAPSHOT'
+    }
+
+    repositories {
+        maven {
+            allowInsecureProtocol = true
+            url "http://maven.aliyun.com/nexus/content/groups/public/"
+        }
+        maven { url 'https://repo.spring.io/milestone' }
+        maven { url 'https://repo.spring.io/snapshot' }
+    }
+
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.11.RELEASE"
+    }
+
+}
+
+plugins {
+    id "org.sonarqube" version "3.0"
+}
+
+apply plugin: 'org.sonarqube'
+
+ext {
+    junitVersion = '5.8.2'
+    lombokVersion = '1.18.22'
+}
+
+allprojects {
+
+    group 'org.seilea'
+    version '1.0-SNAPSHOT'
+
+    apply plugin: 'java'
+    apply plugin: 'checkstyle'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    // 排除 bootJar 指定Main方法
+    project(":common") {
+        bootJar { enabled = false }
+        jar { enabled = true }
+    }
+
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
+
+    repositories {
+        maven {
+            allowInsecureProtocol = true
+            url "http://maven.aliyun.com/nexus/content/groups/public/"
+        }
+        maven { url 'https://repo.spring.io/milestone' }
+        maven { url 'https://repo.spring.io/snapshot' }
+    }
+
+}
+
+subprojects {
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        }
+    }
+
+    dependencies {
+        compileOnly "org.projectlombok:lombok:${lombokVersion}"
+        annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+        testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+        testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+        testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        testImplementation 'io.projectreactor:reactor-test'
+    }
+
+    jar {
+        manifest.attributes provider: 'gradle'
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+    task sourceJar(type: Jar) {
+        from sourceSets.main.allJava
+    }
+
+    checkstyle {
+        toolVersion = '9.3'
+        configFile rootProject.file('checkstyle/checkstyle.xml')
+        sourceSets = [project.sourceSets.main]
+        ignoreFailures = false
+        showViolations = true
+    }
+
+}

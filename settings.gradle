@@ -1,0 +1,5 @@
+rootProject.name = 'cherubim'
+include 'gateway'
+include 'common'
+include 'auth-service'
+

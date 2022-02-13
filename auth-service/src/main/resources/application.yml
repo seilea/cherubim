@@ -1,0 +1,8 @@
+server:
+  port: 8100
+  shutdown: graceful
+
+logging:
+  level:
+    root: INFO
+#    org.springframework.boot.autoconfigure: DEBUG
