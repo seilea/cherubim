@@ -3,8 +3,9 @@ spring:
     name: cherubim-auth
   cloud:
     consul:
+      enabled: false
       host: localhost
-      port: 8500
+      port: 8501
       discovery:
         enabled: true
         register: true
@@ -13,3 +14,20 @@ spring:
         healthCheckInterval: 10s
         healthCheckCriticalTimeout: 3m
         preferIpAddress: true
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  metrics:
+    tags:
+      application: ${spring:application:name}

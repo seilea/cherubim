@@ -1,8 +1,10 @@
 buildscript {
 
     ext {
-        springBootVersion = '3.0.0-SNAPSHOT'
-        springCloudVersion = '2022.0.0-SNAPSHOT'
+        springBootVersion = '2.6.7'
+        springCloudVersion = '2021.0.3-SNAPSHOT'
+        springManagementPluginVersion = '1.0.11.RELEASE'
+        sonarqubeVersion = '3.3'
     }
 
     repositories {
@@ -16,16 +18,23 @@ buildscript {
 
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-        classpath "io.spring.gradle:dependency-management-plugin:1.0.11.RELEASE"
+        classpath "io.spring.gradle:dependency-management-plugin:${springManagementPluginVersion}"
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:${sonarqubeVersion}"
     }
 
 }
 
 plugins {
-    id "org.sonarqube" version "3.0"
+    id "org.sonarqube" version "${sonarqubeVersion}"
 }
 
 apply plugin: 'org.sonarqube'
+
+sonarqube {
+    properties {
+        property "sonar.sourceEncoding", "UTF-8"
+    }
+}
 
 ext {
     junitVersion = '5.8.2'
@@ -48,8 +57,8 @@ allprojects {
         jar { enabled = true }
     }
 
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 
     configurations {
         compileOnly {
@@ -74,13 +83,16 @@ allprojects {
 
 subprojects {
 
-    dependencyManagement {
-        imports {
-            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    // 在subprojects段中添加以下块内容
+    sonarqube {
+        properties {
+            // 如果同时存在src/main/java与src/main/test，则要按以下方式设置，如果没有单元测试用例目录test，也可以只填写src
+            property "sonar.sources", "src/main/java"
         }
     }
 
     dependencies {
+        implementation platform("org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}")
         compileOnly "org.projectlombok:lombok:${lombokVersion}"
         annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
         testCompileOnly "org.projectlombok:lombok:${lombokVersion}"

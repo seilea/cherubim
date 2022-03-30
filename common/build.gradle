@@ -1,4 +1,6 @@
 bootJar { enabled = false }
+
 dependencies {
-    implementation 'org.apache.poi:poi-ooxml:5.2.0'
+    implementation 'org.apache.poi:poi-ooxml:5.2.2'
+    implementation 'com.google.guava:guava:31.1-jre'
 }

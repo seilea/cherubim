@@ -1,20 +1,19 @@
-package org.seilea.cherubim;
-
+package org.cherubim;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * Gateway
+ * Gateway.
  *
  * @author panhong
  */
 @SpringBootApplication
-public class AuthApplication {
+public class GatewayApplication {
 
     public static void main(String[] args) {
 
-        SpringApplication.run(AuthApplication.class, args);
+        SpringApplication.run(GatewayApplication.class, args);
 
     }
 
